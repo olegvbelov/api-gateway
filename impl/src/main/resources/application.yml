@@ -1,0 +1,33 @@
+server:
+  port: 8080
+gateway:
+  uri: http://api-gateway:8080
+spring:
+  application:
+    name: api-gateway
+  boot:
+    admin:
+      client:
+        enabled: false
+        url: http://microservice-monitoring:8080
+        instance:
+          service-url: http://api-gateway:8080
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+        add-to-simple-url-handler-mapping: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin
+        - DedupeResponseHeader=Access-Control-Request-Method
+        - DedupeResponseHeader=Access-Control-Request-Headers
+        - DedupeResponseHeader=Vary
+      routes:
+        - id: transactions-service
+          uri: http://transactions-service:8080
+          predicates:
+            - Path=/transactions
